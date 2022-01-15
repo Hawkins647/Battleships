@@ -1,5 +1,7 @@
 import tkinter as tk
 import threading
+import random
+import time
 
 # define colours
 blue = "#345995"
@@ -39,7 +41,10 @@ class Battleships:
         button_frame = tk.Frame(root)
         button_frame.pack()
 
-        # Define the labels that go around the grid frame across the x axis
+        # define global list
+        self.grid_list = []
+
+        # define the labels that go around the grid frame across the x axis
         grid_label_placeholder = tk.Label(grid_frame, text="", font=grid_label_font, bg=self.foreground_colour)
         grid_label_placeholder.grid(row=0, column=0)
 
@@ -300,14 +305,73 @@ class Battleships:
         self.play_game_button = tk.Button(button_frame, text="Play new game!", font=grid_label_font, command=self.play_new_game)
         self.play_game_button.grid(row=0, column=0)
 
-        self.ship_label = tk.Label(button_frame, text="Ships:\nPlace Carrier: 5 spaces", font=grid_label_font)
-        self.ship_label.grid(row=1, column=0)
+        self.button_list = [self.grid_button_a1, self.grid_button_a2, self.grid_button_a3, self.grid_button_a4, self.grid_button_a5, self.grid_button_a6, self.grid_button_a7, self.grid_button_a8, self.grid_button_a9, self.grid_button_a10,
+                            self.grid_button_b1, self.grid_button_b2, self.grid_button_b3, self.grid_button_b4, self.grid_button_b5, self.grid_button_b6, self.grid_button_b7, self.grid_button_b8, self.grid_button_b9, self.grid_button_b10,
+                            self.grid_button_c1, self.grid_button_c2, self.grid_button_c3, self.grid_button_c4, self.grid_button_c5, self.grid_button_c6, self.grid_button_c7, self.grid_button_c8, self.grid_button_c9, self.grid_button_c10,
+                            self.grid_button_d1, self.grid_button_d2, self.grid_button_d3, self.grid_button_d4, self.grid_button_d5, self.grid_button_d6, self.grid_button_d7, self.grid_button_d8, self.grid_button_d9, self.grid_button_d10,
+                            self.grid_button_e1, self.grid_button_e2, self.grid_button_e3, self.grid_button_e4, self.grid_button_e5, self.grid_button_e6, self.grid_button_e7, self.grid_button_e8, self.grid_button_e9, self.grid_button_e10,
+                            self.grid_button_f1, self.grid_button_f2, self.grid_button_f3, self.grid_button_f4, self.grid_button_f5, self.grid_button_f6, self.grid_button_f7, self.grid_button_f8, self.grid_button_f9, self.grid_button_f10,
+                            self.grid_button_g1, self.grid_button_g2, self.grid_button_g3, self.grid_button_g4, self.grid_button_g5, self.grid_button_g6, self.grid_button_g7, self.grid_button_g8, self.grid_button_g9, self.grid_button_g10,
+                            self.grid_button_h1, self.grid_button_h2, self.grid_button_a3, self.grid_button_h4, self.grid_button_h5, self.grid_button_h6, self.grid_button_h7, self.grid_button_h8, self.grid_button_h9, self.grid_button_h10,
+                            self.grid_button_i1, self.grid_button_i2, self.grid_button_i3, self.grid_button_i4, self.grid_button_i5, self.grid_button_i6, self.grid_button_i7, self.grid_button_i8, self.grid_button_i9, self.grid_button_i10,
+                            self.grid_button_j1, self.grid_button_j2, self.grid_button_j3, self.grid_button_j4, self.grid_button_j5, self.grid_button_j6, self.grid_button_j7, self.grid_button_j8, self.grid_button_j9, self.grid_button_j10,]
 
-        self.disable_buttons()
+    def set_up_boat_positions(self):
+        """Set up the boat positions with an element of randomness."""
+        try:
+            carrier_button = random.choice(self.button_list)
+            carrier_button.config(text="X")
+            for i in range(1, 5):
+                self.button_list[self.button_list.index(carrier_button) + i].config(text="X")
+
+            battleship_button = random.choice(self.button_list)
+            battleship_button.config(text="X")
+            for i in range(1, 4):
+                self.button_list[self.button_list.index(battleship_button) + i].config(text="X")
+
+            cruiser_button = random.choice(self.button_list)
+            cruiser_button.config(text="X")
+            for i in range(1, 3):
+                self.button_list[self.button_list.index(cruiser_button) + i].config(text="X")
+
+            submarine_button = random.choice(self.button_list)
+            submarine_button.config(text="X")
+            for i in range(1, 3):
+                self.button_list[self.button_list.index(submarine_button) + i].config(text="X")
+
+            destroyer_button = random.choice(self.button_list)
+            destroyer_button.config(text="X")
+            for i in range(1, 2):
+                self.button_list[self.button_list.index(destroyer_button) + i].config(text="X")
+
+        except IndexError:
+            self.set_up_boat_positions()
 
     def play_new_game(self):
-        self.play_game_button.config(text="P1, Place your ships!")
+        """Main game logic"""
+        self.set_up_boat_positions()
+        self.play_game_button.config(text="Your board!", state=tk.DISABLED)
 
+        for button in self.button_list:
+            if button.cget('text') == "X":
+                self.grid_list.append(1)
+            else:
+                self.grid_list.append(0)
+
+        thread = threading.Thread(target=self.clear_board)
+        thread.start()
+
+
+
+
+
+    def clear_board(self):
+        """Clear all text on the buttons"""
+        time.sleep(3)
+        for button in self.button_list:
+            button.config(text="")
+
+        self.play_game_button.config(text="Take a guess!")
 
 
 if __name__ == "__main__":
